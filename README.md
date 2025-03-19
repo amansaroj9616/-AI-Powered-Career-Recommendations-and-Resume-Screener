@@ -48,9 +48,10 @@ Many students struggle with career decisions due to a lack of personalized guida
 ### 📌 Install Dependencies
 ```bash
 pip install fastapi uvicorn pandas scikit-learn nltk openai
+```
 
 📌 Backend API (app.py)
-
+```
 from fastapi import FastAPI
 from recommendation import get_career_recommendations
 from resume_optimizer import optimize_resume
@@ -68,9 +69,10 @@ def career_recommendation(user_data: dict):
 @app.post("/resume-optimization/")
 def resume_optimization(resume_text: dict):
     return optimize_resume(resume_text["content"])
+```
 
 📌 Career Recommendation Logic (recommendation.py)
-
+```
 import random
 
 def get_career_recommendations(user_data):
@@ -87,29 +89,101 @@ def get_career_recommendations(user_data):
     matches = [career for career, required_skills in career_paths.items() if any(skill in skills for skill in required_skills)]
     
     return {"recommended_careers": matches if matches else ["General IT Career"]}
+```
+📌 Resume Optimization (resume_optimizer.py)
+```
+import openai
 
+openai.api_key = "YOUR_OPENAI_API_KEY"
+
+def optimize_resume(resume_text):
+    response = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are an expert resume optimizer."},
+            {"role": "user", "content": f"Optimize this resume for a software engineering job: {resume_text}"}
+        ]
+    )
+    return response["choices"][0]["message"]["content"]
+```
+🎨 Frontend Code (React.js)
+📌 Install Dependencies
+```
+npm install axios react-router-dom
+```
+📌 App Component (App.js)
+```
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import CareerRecommendations from "./CareerRecommendations";
+import ResumeOptimizer from "./ResumeOptimizer";
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<CareerRecommendations />} />
+        <Route path="/resume" element={<ResumeOptimizer />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App;
+```
+📌 Career Recommendation Component (CareerRecommendations.js)
+```
+import React, { useState } from "react";
+import axios from "axios";
+
+function CareerRecommendations() {
+  const [userData, setUserData] = useState({ skills: "", interests: "" });
+  const [recommendations, setRecommendations] = useState([]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const response = await axios.post("http://localhost:8000/career-recommendation/", userData);
+    setRecommendations(response.data.recommended_careers);
+  };
+
+  return (
+    <div>
+      <h1>AI Career Recommendations</h1>
+      <form onSubmit={handleSubmit}>
+        <input type="text" placeholder="Skills (comma-separated)" onChange={(e) => setUserData({ ...userData, skills: e.target.value.split(",") })} />
+        <input type="text" placeholder="Interests (comma-separated)" onChange={(e) => setUserData({ ...userData, interests: e.target.value.split(",") })} />
+        <button type="submit">Get Recommendations</button>
+      </form>
+      <h2>Suggested Career Paths:</h2>
+      <ul>
+        {recommendations.map((career, index) => (
+          <li key={index}>{career}</li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default CareerRecommendations;
+```
 
 🚀 Getting Started
 🔹 Prerequisites
 Install Node.js, Python, and FastAPI
-Clone the repository:
-bash
-Copy
-Edit
+```
 git clone https://github.com/your-repo/ai-career-guidance.git
 cd ai-career-guidance
-Install dependencies:
-bash
-Copy
-Edit
+```
+Install dependen
+```
 npm install  # For frontend
 pip install -r backend/requirements.txt  # For backend
+```
 Start the development server:
-bash
-Copy
-Edit
+```
 npm start  # Frontend
 uvicorn backend.app:app --reload  # Backend
+```
 🤝 Contributing
 Want to contribute? Feel free to fork this repo and submit a pull request!
 
@@ -117,12 +191,7 @@ Want to contribute? Feel free to fork this repo and submit a pull request!
 This project is licensed under the MIT License.
 
 ⭐ Star this repository if you find it useful!
-
-yaml
-Copy
-Edit
-
----
+```
 
 This README file includes:
 - **Detailed explanations**
@@ -131,6 +200,7 @@ This README file includes:
 - **Setup instructions**
 
 Let me know if you need modifications! 🚀
+
 
 
 
